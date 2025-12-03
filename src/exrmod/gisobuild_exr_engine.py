@@ -116,7 +116,7 @@ CPIO_CHOWN = os.path.join(os.path.dirname(__file__), "cpio_chown.py")
 
 def insideCUBES():
     contEnvPath = pathlib.Path("/run/.containerenv")
-    if contEnvPath.exists() and contEnvPath.read_text().find("cubes") is not -1:
+    if contEnvPath.exists() and contEnvPath.read_text().find("cubes") != -1:
         return True
     return False
 
@@ -566,14 +566,14 @@ class Rpmdb:
                 pre_req_rpm=("%s/%s*.rpm" %(repo_path, "asr9k-bng-supp-x64"))
                 pre_req_rpms += glob.glob(pre_req_rpm)
             for el in pre_req_rpms:
-                if not re.search('CSC[a-z][a-z]\d{5}', el):
+                if not re.search(r'CSC[a-z][a-z]\d{5}', el):
                     pre_req_rpm_list.append(el)
         if "-mpls-te-" in pkg:
             for repo_path in repo_paths:
                 pre_req_rpm=("%s/*%s*.rpm" %(repo_path, "-mpls-"))
                 pre_req_rpms += glob.glob(pre_req_rpm)
             for el in pre_req_rpms:
-                if not re.search('CSC[a-z][a-z]\d{5}', el) and not "-mpls-te-" in el:
+                if not re.search(r'CSC[a-z][a-z]\d{5}', el) and not "-mpls-te-" in el:
                     pre_req_rpm_list.append(el)
         return pre_req_rpm_list
 
@@ -590,7 +590,7 @@ class Rpmdb:
 
         for pkg in pkglist:
             for repo in repo_paths:
-                if re.search('CSC[a-z][a-z]\d{5}', pkg):
+                if re.search(r'CSC[a-z][a-z]\d{5}', pkg):
 
                     # DDTS ID with tar extension
                     if pkg.endswith('.tar'):
@@ -2112,7 +2112,7 @@ class Iso(object):
               # In 712 and some otehr release base rpm version part of smu is 
               # lower version than base rpm in initrd. Due to this GISO build compatibility 
               # check failed. So skipping base rpm from compatibility check
-              if global_platform_name not in rpm and not re.search('CSC[a-z][a-z]\d{5}', rpm):
+              if global_platform_name not in rpm and not re.search(r'CSC[a-z][a-z]\d{5}', rpm):
                   continue
               if os.path.isfile(rpm):
                 shutil.copy(rpm, rpm_staging_dir)
@@ -2156,7 +2156,7 @@ class Iso(object):
         logger.debug("The ISO key is %s"%(iso_key))
         try:
             for pkg in input_rpms_unique:
-                if global_platform_name not in pkg and not re.search('CSC[a-z][a-z]\d{5}', pkg):
+                if global_platform_name not in pkg and not re.search(r'CSC[a-z][a-z]\d{5}', pkg):
                     continue
                 key: str = None
                 key_cmd: str = ("chroot %s rpm -qip rpms/%s"%(self.iso_extract_path, pkg))
@@ -2216,7 +2216,7 @@ class Iso(object):
                 logger.debug('%s' % line)
                 if re.match('.*Failed dependencies.*', line):
                     continue
-                elif re.match('(\s*/)', line) or (not line):
+                elif re.match(r'(\s*/)', line) or (not line):
                     logger.debug("Ignoring false dependancy")
                     continue
                 # Fretta hack for netbase false dependeancy
